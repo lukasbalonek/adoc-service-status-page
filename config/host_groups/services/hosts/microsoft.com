@@ -1,9 +1,7 @@
 # Set host address or hostname (if IPv6 is used, don't forget these: [] !)
-HOST=balonluk.fit.cvut.cz
+HOST=microsoft.com
 
 # CONFIGURATION
 PING=y
 HTTP=y
-HTTP_PORT=8080
 HTTPS=y
-HTTPS_PORT=443
