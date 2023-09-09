@@ -1,0 +1,9 @@
+# Set host address or hostname (if IPv6 is used, don't forget these: [] !)
+HOST=balonluk.fit.cvut.cz
+
+# CONFIGURATION
+PING=y
+HTTP=y
+HTTP_PORT=80
+HTTPS=y
+HTTPS_PORT=443
