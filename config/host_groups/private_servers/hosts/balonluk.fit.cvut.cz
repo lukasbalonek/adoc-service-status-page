@@ -1,6 +1,9 @@
 # Set host address or hostname (if IPv6 is used, don't forget these: [] !)
 HOST=balonluk.fit.cvut.cz
 
+# Pretty name (if hostname is not enough)
+HOST_PRETTY_NAME="balonluk's sandbox server"
+
 # CONFIGURATION
 PING=y
 HTTP=y

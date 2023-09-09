@@ -10,8 +10,9 @@
 
 ### CONFIGURATION ###
 
-# Name of service provider
-SERVICE_PROVIDER="contoso.net (lmao)"
+# This page belongs to ..
+SERVICE_PROVIDER="contoso or some bulles-shites"
+SERVICE_PROVIDER+=" service status"
 
 # Target directory where status page and it's data should be stored
 # THESE THREE VARS MUST MATCH IN <update-data.sh> and <gen.sh> !!!
@@ -59,20 +60,23 @@ echo "Last updated: ${TIMESTAMP_MONKEY_READABLE}"
 echo
 
 # loop throught host_groups
-for host_group in config/host_groups/*; do
+for host_group in $(ls -t config/host_groups/); do
+
+  # define path to host_group
+  host_group_path=config/host_groups/${host_group}
 
   # do only for directories
-  if [[ -d ${host_group} ]]; then
+  if [[ -d ${host_group_path} ]]; then
 
     # tactical(formatting) newline
 	echo
 
     # define and show host_group_name (category of host)
-    host_group_name=$(cat ${host_group}/NAME)
+    host_group_name=$(cat ${host_group_path}/NAME)
     echo "== ${host_group_name}"
 	
 	# Running throught hosts in host_groups/*
-    for curr_host in ${host_group}/hosts/*; do
+    for curr_host in ${host_group_path}/hosts/*; do
 	
 	  # Load host configuration
 	  source ${curr_host}
@@ -80,7 +84,11 @@ for host_group in config/host_groups/*; do
 	  # Show HOST's hostname
       if [[ -n ${HOST} ]]; then
 	    echo
-        echo "=== ${HOST}"
+	    if [[ -n ${HOST_PRETTY_NAME} ]]; then
+          echo "=== ${HOST_PRETTY_NAME}"
+		else
+          echo "=== ${HOST}"
+		fi
       fi
 
       # Loop throught collected data
@@ -121,6 +129,8 @@ for host_group in config/host_groups/*; do
 		unset PING_CHECK
 		unset HTTP_CHECK
 		unset HTTPS_CHECK
+		
+		unset HOST_PRETTY_NAME
 
         # tactical(formatting) newline
 	    echo
