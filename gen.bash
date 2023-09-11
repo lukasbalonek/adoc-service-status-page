@@ -23,7 +23,7 @@ DATA_DIR=${TARGET_DIR}/host_data
 RESULTS_DIR=${TARGET_DIR}/results_data
 
 # maximum history (number of bars represented)
-declare -i HIST_MAX=40
+declare -i HIST_MAX=96
 
 # usable variables :-D
 TIMESTAMP=$(date +%F_%H-%M-%S)
@@ -36,8 +36,10 @@ MEDIA_CHECK_DEFAULT_OPTS="width=24,height=24"
 BAR_OK="image:media/bar_ok.png"
 BAR_FAIL="image:media/bar_fail.png"
 BACK_BTN="image:../media/back.png"
-CHECK_OK="image:../media/status_ok.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
-CHECK_FAIL="image:../media/status_fail.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
+CHECK_OK="image:media/status_ok.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
+CHECK_FAIL="image:media/status_fail.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
+CHECK_OK_HIST=$(echo ${CHECK_OK} | sed "s@image:@image:../@g")
+CHECK_FAIL_HIST=$(echo ${CHECK_FAIL} | sed "s@image:@image:../@g")
 
 # Default commands
 CMD_CURL="curl --connect-timeout 10 -o /dev/null -I --silent -w "%{http_code}""
@@ -68,7 +70,7 @@ mkdir -p ${TARGET_DIR}
 # STATUS PAGE GENERATION PHASE
 echo -e "\e[33mGenerating <index.html> from <index.adoc> using asciidoctor\e[m"
 {
-echo "= ${SERVICE_PROVIDER}"
+echo "== ${SERVICE_PROVIDER}"
 echo "Last updated: ${TIMESTAMP_MONKEY_READABLE}"
 echo
 
@@ -82,11 +84,11 @@ for host_group in $(ls -t config/host_groups/); do
   if [[ -d ${host_group_path} ]]; then
 
     # tactical(formatting) newline
-	echo
+    echo
 
     # define and show host_group_name (category of host)
     host_group_name=$(cat ${host_group_path}/NAME)
-    echo "== ${host_group_name}"
+    echo "=== ${host_group_name}"
 
     # Running throught hosts in host_groups/*
     for curr_host in ${host_group_path}/hosts/*; do
@@ -96,13 +98,13 @@ for host_group in $(ls -t config/host_groups/); do
 
       # Show HOST's hostname
       if [[ -n ${HOST} ]]; then
-        echo
-        if [[ -n ${HOST_PRETTY_NAME} ]]; then
-          echo "=== ${HOST_PRETTY_NAME}"
-        else
-          echo "=== ${HOST}"
-	fi
+        echo "==== ${HOST}"
       fi
+
+      # make collapsible "history" (start)
+      echo ".History"
+      echo "[%collapsible]"
+      echo "===="
 
       # Loop throught collected data
       for curr_data in $(ls -tr ${DATA_DIR}/${HOST}*); do
@@ -141,12 +143,16 @@ for host_group in $(ls -t config/host_groups/); do
 		unset HTTP_CHECK
 		unset HTTPS_CHECK
 
+		# that could make it confucius
 		unset HOST_PRETTY_NAME
 
-        # tactical(formatting) newline
-	    echo
+                # tactical(formatting) newline
+                echo
 
       done
+
+      # make collapsible "history" (end)
+      echo "===="
 
     done
 
@@ -155,6 +161,38 @@ for host_group in $(ls -t config/host_groups/); do
 done
 
 } 1> index.adoc
+
+# check last hosts' status
+for HOST_FILE in config/host_groups/*/hosts/*; do
+
+  # Load HOST's configuration
+  source $HOST_FILE
+
+  # Test latest data for *CHECK=PASSED, if not found, it failed ..
+  LATEST_DATA=$(ls -t public/host_data/$(basename ${HOST})* | head -n1)
+  if grep -q "CHECK=FAILED" ${LATEST_DATA}; then
+
+    # Replace <hostname> with <check image + hostname>
+    sed -i "s\== ${HOST}\== ${CHECK_FAIL} ${HOST}\g" index.adoc
+
+    # if host has pretty name
+    if [[ -n ${HOST_PRETTY_NAME} ]]; then
+      sed -i "s\== ${HOST}\== ${CHECK_FAIL} ${HOST_PRETTY_NAME}\g" index.adoc
+    fi
+
+  else
+
+    # Replace <hostname> with <check image + hostname>
+    sed -i "s\== ${HOST}\== ${CHECK_OK} ${HOST}\g" index.adoc
+
+    # if host has pretty name
+    if [[ -n ${HOST_PRETTY_NAME} ]]; then
+      sed -i "s\== ${HOST}\== ${CHECK_OK} ${HOST_PRETTY_NAME}\g" index.adoc
+    fi
+
+  fi
+
+done
 
 # PART, WHERE .ADOC BECOMES AN .HTML
 adoc-generate index.adoc
