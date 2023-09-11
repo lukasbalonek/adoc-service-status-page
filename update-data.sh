@@ -84,7 +84,7 @@ for host_group in config/host_groups/*; do
             PING_RESPONSE=$(ping -W10 -c1 ${HOST} 2>&1)
 
 	    if [[ $? -eq 0 ]]; then
-              PING_RESPONSE_TIME="$(echo ${PING_RESPONSE} | grep -oE "time=[0-9][[:digit:]]" | cut -d = -f2)"
+              PING_RESPONSE_TIME="$(echo ${PING_RESPONSE} | cut -d / -f5)"
 	      echo -e "#DEL_ME PING => ${CHECK_OK} \nPING_CHECK=PASSED \nPING=${PING_RESPONSE_TIME}ms" >> "${DATA_FILE_PATH}"
             else
               echo -e "#DEL_ME PING => ${CHECK_FAIL} \nPING_CHECK=FAILED \nPING_RESULT=\"${PING_RESPONSE}\"" >> "${DATA_FILE_PATH}"
