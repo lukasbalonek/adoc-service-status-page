@@ -11,11 +11,6 @@
 
 ### CONFIGURATION ###
 
-# THESE THREE VARS MUST MATCH IN <update-data.bash> and <gen.bash> !!!
-TARGET_DIR=public
-DATA_DIR=${TARGET_DIR}/host_data
-RESULTS_DIR=${TARGET_DIR}/results_data
-
 # maximum history (number of bars represented)
 declare -i HIST_MAX=40
 

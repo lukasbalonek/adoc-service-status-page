@@ -15,9 +15,10 @@ SERVICE_PROVIDER="contoso or some bulles-shites"
 SERVICE_PROVIDER+=" services status"
 
 # Target directory where status page and it's data should be stored
-# THESE THREE VARS MUST MATCH IN <update-data.bash> and <gen.bash> !!!
 TARGET_DIR=public
+# Raw data collected from tests
 DATA_DIR=${TARGET_DIR}/host_data
+# Results as .html pages
 RESULTS_DIR=${TARGET_DIR}/results_data
 
 # usable variables :-D
@@ -55,7 +56,7 @@ mkdir -p ${TARGET_DIR}
 # STATUS PAGE GENERATION PHASE
 echo -e "\e[33mGenerating <index.html> from <index.adoc> using asciidoctor\e[m"
 {
-echo "= ${SERVICE_PROVIDER} service status"
+echo "= ${SERVICE_PROVIDER}"
 echo "Last updated: ${TIMESTAMP_MONKEY_READABLE}"
 echo
 
@@ -69,7 +70,7 @@ for host_group in $(ls -t config/host_groups/); do
   if [[ -d ${host_group_path} ]]; then
 
     # tactical(formatting) newline
-	echo
+    echo
 
     # define and show host_group_name (category of host)
     host_group_name=$(cat ${host_group_path}/NAME)
