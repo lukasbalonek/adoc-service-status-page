@@ -102,6 +102,7 @@ for host_group in $(ls -t config/host_groups/); do
 
 		# Make an error if any check fail
 	        if [[ ${PING_CHECK} = "FAILED" ]]; then HOST_CHECK="FAILED"; fi
+        	if [[ ${TFTP_CHECK} = "FAILED" ]]; then HOST_CHECK="FAILED"; fi
         	if [[ ${HTTP_CHECK} = "FAILED" ]]; then HOST_CHECK="FAILED"; fi
 		if [[ ${HTTPS_CHECK} = "FAILED" ]]; then HOST_CHECK="FAILED"; fi
 
@@ -123,6 +124,7 @@ for host_group in $(ls -t config/host_groups/); do
 
 		# unset loaded variables
 		unset PING_CHECK
+                unset TFTP_CHECK
 		unset HTTP_CHECK
 		unset HTTPS_CHECK
 

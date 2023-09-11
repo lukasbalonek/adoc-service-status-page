@@ -17,7 +17,7 @@ DATA_DIR=${TARGET_DIR}/host_data
 RESULTS_DIR=${TARGET_DIR}/results_data
 
 # maximum history (number of bars represented)
-declare -i HIST_MAX=20
+declare -i HIST_MAX=40
 
 # usable variables :-D
 TIMESTAMP=$(date +%F_%H-%M-%S)
@@ -92,10 +92,36 @@ for host_group in config/host_groups/*; do
 
           fi
 
+          # TFTP
+	  if [[ ${TFTP} = 'y' ]]; then
+
+            if [[ -n ${TFTP_PATH} ]]; then
+
+              # formatting newline
+              echo "" >> "${DATA_FILE_PATH}"
+
+              # set default values if not set in configuration file
+              if [[ -z ${TFTP_PORT} ]]; then TFTP_PORT=69; fi
+
+              # perform the test
+              URL="tftp://${HOST}:${TFTP_PORT}${TFTP_PATH}"
+              TFTP_RESPONSE=$(${CMD_CURL} ${URL})
+	      if [[ $? -eq 0 ]]; then
+	        echo -e "#DEL_ME TFTP => ${CHECK_OK} \nTFTP_CHECK=PASSED \nTFTP_PORT=${TFTP_PORT}" >> "${DATA_FILE_PATH}"
+              else
+                echo -e "#DEL_ME TFTP => ${CHECK_FAIL} \nTFTP_CHECK=FAILED \nTFTP_PORT=${TFTP_PORT} \nTFTP_RESULT=\"server returned: ${TFTP_RESPONSE}\"" >> "${DATA_FILE_PATH}"
+              fi
+
+            else
+
+              echo -e "\e[31mVariable \e[m\$TFTP_PATH\e[31m for host ${HOST} MUST be specified ! \e[m"
+
+            fi
+
+          fi
+
           # HTTP
 	  if [[ ${HTTP} = 'y' ]]; then
-
-	    echo -e "\e[33mPerforming tests on ${HOST}\e[m"
 
             # formatting newline
 	    echo "" >> "${DATA_FILE_PATH}"
@@ -163,6 +189,9 @@ for host_group in config/host_groups/*; do
           unset HOST
           unset PING_CHECK
 	  unset PING_RESULT
+          unset TFTP
+          unset TFTP_PORT
+          unset TFTP_PATH
           unset HTTP
           unset HTTP_PORT
           unset HTTP_PATH
