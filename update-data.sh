@@ -1,12 +1,12 @@
 #!/bin/bash
 
-#########################################################################
-#																		#
-#		ASCIIDOCTOR STATUS PAGE GENERATOR (2/2 - update-data.sh)		#
-#		BASH script created by Lukas Balonek (2023)						#
-#		<lukas.balonek@gmail.com>										#
-#																		#
-#########################################################################
+###########################################################################################
+#											  #
+#		ASCIIDOCTOR STATUS PAGE GENERATOR (2/2 - update-data.sh)		  #
+#		BASH script created by Lukas Balonek (2023)				  #
+#		<lukas.balonek@gmail.com>						  #
+#											  #
+###########################################################################################
 
 
 ### CONFIGURATION ###
@@ -45,6 +45,9 @@ asciidoctor \
 rm -f docinfo.html
 }
 
+# Default commands
+CMD_CURL="curl --connect-timeout 10 -o /dev/null -I --silent -w "%{http_code}""
+
 ########## START ##########
 
 echo -e "\e[33mRefreshing data ..\e[m"
@@ -57,7 +60,7 @@ for host_group in config/host_groups/*; do
   # do only for directories
   if [[ -d ${host_group} ]]; then
 
-	# Loop throught hosts in host_groups
+    # Loop throught hosts in host_groups
     for curr_host in ${host_group}/hosts/*; do
 
         # Load host configuration
@@ -68,21 +71,21 @@ for host_group in config/host_groups/*; do
 
           # Define data file where results will be written
           DATA_FILE="${HOST}_${TIMESTAMP}"
-		  DATA_FILE_PATH="${DATA_DIR}/${DATA_FILE}"
-		
-		  ### CHECKS ###
+	  DATA_FILE_PATH="${DATA_DIR}/${DATA_FILE}"
+
+	  ### CHECKS ###
           # PING
           if [[ ${PING} = 'y' ]]; then
 
             # formatting newline
-		    echo "" >> "${DATA_FILE_PATH}"
+	    echo "" >> "${DATA_FILE_PATH}"
 
             # perform the test
             PING_RESPONSE=$(ping -W10 -c1 ${HOST} 2>&1)
-		  
-		    if [[ $? -eq 0 ]]; then
+
+	    if [[ $? -eq 0 ]]; then
               PING_RESPONSE_TIME="$(echo ${PING_RESPONSE} | grep -oE "time=[0-9][[:digit:]]" | cut -d = -f2)"
-		      echo -e "#DEL_ME PING => ${CHECK_OK} \nPING_CHECK=PASSED \nPING=${PING_RESPONSE_TIME}ms" >> "${DATA_FILE_PATH}"
+	      echo -e "#DEL_ME PING => ${CHECK_OK} \nPING_CHECK=PASSED \nPING=${PING_RESPONSE_TIME}ms" >> "${DATA_FILE_PATH}"
             else
               echo -e "#DEL_ME PING => ${CHECK_FAIL} \nPING_CHECK=FAILED \nPING_RESULT=\"${PING_RESPONSE}\"" >> "${DATA_FILE_PATH}"
             fi
@@ -90,42 +93,41 @@ for host_group in config/host_groups/*; do
           fi
 
           # HTTP
-	      if [[ ${HTTP} = 'y' ]]; then
+	  if [[ ${HTTP} = 'y' ]]; then
 
-			echo -e "\e[33mPerforming tests on ${HOST}\e[m"
+	    echo -e "\e[33mPerforming tests on ${HOST}\e[m"
 
             # formatting newline
-		    echo "" >> "${DATA_FILE_PATH}"
+	    echo "" >> "${DATA_FILE_PATH}"
 
-	        # set default values if not set in configuration file
-	        if [[ -z ${HTTP_PORT} ]]; then HTTP_PORT=80; fi
+            # set default values if not set in configuration file
+            if [[ -z ${HTTP_PORT} ]]; then HTTP_PORT=80; fi
 
             # perform the test
-	        URL="http://${HOST}:${HTTP_PORT}${HTTP_PATH}"
-            HTTP_RESPONSE=$(curl -o /dev/null -I --silent -w "%{http_code}" ${URL})
-		    if [[ $? -eq 0 ]]; then
-			  echo -e "#DEL_ME HTTP => ${CHECK_OK} \nHTTP_CHECK=PASSED \nHTTP_PORT=${HTTP_PORT}" >> "${DATA_FILE_PATH}"
+	    URL="http://${HOST}:${HTTP_PORT}${HTTP_PATH}"
+            HTTP_RESPONSE=$(${CMD_CURL} ${URL})
+	    if [[ $? -eq 0 ]]; then
+	      echo -e "#DEL_ME HTTP => ${CHECK_OK} \nHTTP_CHECK=PASSED \nHTTP_PORT=${HTTP_PORT}" >> "${DATA_FILE_PATH}"
             else
               echo -e "#DEL_ME HTTP => ${CHECK_FAIL} \nHTTP_CHECK=FAILED \nHTTP_PORT=${HTTP_PORT} \nHTTP_RESULT=\"server returned: ${HTTP_RESPONSE}\"" >> "${DATA_FILE_PATH}"
             fi
 
           fi
 
-          # HTTPS
-	      if [[ ${HTTPS} = 'y' ]]; then
+         # HTTPS
+         if [[ ${HTTPS} = 'y' ]]; then
 
             # formatting newline
-		    echo "" >> "${DATA_FILE_PATH}"
+	    echo "" >> "${DATA_FILE_PATH}"
 
-	        # set default values if not set in configuration file
-	        if [[ -z ${HTTPS_PORT} ]]; then HTTPS_PORT=443; fi
+            # set default values if not set in configuration file
+            if [[ -z ${HTTPS_PORT} ]]; then HTTPS_PORT=443; fi
 
             # perform the test
-	        URL="https://${HOST}:${HTTPS_PORT}${HTTPS_PATH}"
-            HTTPS_RESPONSE=$(curl -o /dev/null -I --silent -w "%{http_code}" ${URL})
-		    if [[ $? -eq 0 ]]; then
+	    URL="https://${HOST}:${HTTPS_PORT}${HTTPS_PATH}"
+            HTTPS_RESPONSE=$(${CMD_CURL} ${URL})
+	    if [[ $? -eq 0 ]]; then
               echo -e "#DEL_ME HTTPS => ${CHECK_OK} \nHTTPS_CHECK=PASSED \nHTTPS_PORT=${HTTPS_PORT}" >> "${DATA_FILE_PATH}"
-	  
             else
               echo -e "#DEL_ME HTTPS => ${CHECK_FAIL} \nHTTPS_CHECK=FAILED \nHTTPS_PORT=${HTTPS_PORT} \nHTTPS_RESULT=\"server returned: ${HTTPS_RESPONSE}\"" >> "${DATA_FILE_PATH}"
             fi
@@ -133,33 +135,34 @@ for host_group in config/host_groups/*; do
           fi
 
           # Create page where results are dumped
-		  src_file=dump.adoc
-		  echo "# ${HOST}" > ${src_file}
-		  echo -e "Time: ${TIMESTAMP_MONKEY_READABLE} \n" >> ${src_file}
-		  echo -e "${BACK_BTN}[${MEDIA_BACK_BTN_DEFAULT_OPTS},link=../index.html,title=Back] \n" >> ${src_file}
-          cat ${DATA_DIR}/${DATA_FILE} | tr ' ' '\n' >> ${src_file}		  
+	  src_file=dump.adoc
+	  echo "# ${HOST}" > ${src_file}
+	  echo -e "Time: ${TIMESTAMP_MONKEY_READABLE} \n" >> ${src_file}
+	  echo -e "${BACK_BTN}[${MEDIA_BACK_BTN_DEFAULT_OPTS},link=../index.html,title=Back] \n" >> ${src_file}
+          cat ${DATA_DIR}/${DATA_FILE} | tr ' ' '\n' >> ${src_file}
           adoc-generate ${src_file}
-		  rm ${src_file}
+	  rm ${src_file}
           mv -fv dump.html ${RESULTS_DIR}/${DATA_FILE}.html
 
           # remove old .html results (there's $HIST_MAX set that represents maximum count of "history files")
-		  while [[ $(ls ${RESULTS_DIR}/${HOST}* | wc -l) -gt ${HIST_MAX} ]]; do
-		    file_to_rm=$(ls -t ${RESULTS_DIR}/${HOST}* | tail -n1)
-			echo "Deleting old result: ${file_to_rm}"
-			rm -fv ${file_to_rm}
-		  done
+	  while [[ $(ls ${RESULTS_DIR}/${HOST}* | wc -l) -gt ${HIST_MAX} ]]; do
+	    file_to_rm=$(ls -t ${RESULTS_DIR}/${HOST}* | tail -n1)
+            echo "Deleting old result: ${file_to_rm}"
+	    rm -fv ${file_to_rm}
+	  done
 
           # remove old records (there's $HIST_MAX set that represents maximum count of "history files")
-		  while [[ $(ls ${DATA_DIR}/${HOST}* | wc -l) -gt ${HIST_MAX} ]]; do
-		    file_to_rm=$(ls -t ${DATA_DIR}/${HOST}* | tail -n1)
-			echo "Deleting old data: ${file_to_rm}"
-			rm -fv ${file_to_rm}
-		  done
-	  
+	  while [[ $(ls ${DATA_DIR}/${HOST}* | wc -l) -gt ${HIST_MAX} ]]; do
+	    file_to_rm=$(ls -t ${DATA_DIR}/${HOST}* | tail -n1)
+            echo "Deleting old data: ${file_to_rm}"
+            rm -fv ${file_to_rm}
+
+          done
+
           # unset variables that could've been used
           unset HOST
           unset PING_CHECK
-		  unset PING_RESULT
+	  unset PING_RESULT
           unset HTTP
           unset HTTP_PORT
           unset HTTP_PATH
