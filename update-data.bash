@@ -43,9 +43,9 @@ for host_group in config/host_groups/*; do
 
 	    if [[ $? -eq 0 ]]; then
               PING_RESPONSE_TIME="$(echo ${PING_RESPONSE} | cut -d / -f5)"
-	      echo -e "#DEL_ME PING => ${CHECK_OK} \nPING_CHECK=PASSED \nPING=${PING_RESPONSE_TIME}ms" >> "${DATA_FILE_PATH}"
+	      echo -e "#DEL_ME PING => ${CHECK_OK_HIST} \nPING_CHECK=PASSED \nPING=${PING_RESPONSE_TIME}ms" >> "${DATA_FILE_PATH}"
             else
-              echo -e "#DEL_ME PING => ${CHECK_FAIL} \nPING_CHECK=FAILED \nPING_RESULT=\"${PING_RESPONSE}\"" >> "${DATA_FILE_PATH}"
+              echo -e "#DEL_ME PING => ${CHECK_FAIL_HIST} \nPING_CHECK=FAILED \nPING_RESULT=\"${PING_RESPONSE}\"" >> "${DATA_FILE_PATH}"
             fi
 
           fi
@@ -65,9 +65,9 @@ for host_group in config/host_groups/*; do
               URL="tftp://${HOST}:${TFTP_PORT}${TFTP_PATH}"
               TFTP_RESPONSE=$(${CMD_CURL} ${URL})
 	      if [[ $? -eq 0 ]]; then
-	        echo -e "#DEL_ME TFTP => ${CHECK_OK} \nTFTP_CHECK=PASSED \nTFTP_PORT=${TFTP_PORT}" >> "${DATA_FILE_PATH}"
+	        echo -e "#DEL_ME TFTP => ${CHECK_OK_HIST} \nTFTP_CHECK=PASSED \nTFTP_PORT=${TFTP_PORT}" >> "${DATA_FILE_PATH}"
               else
-                echo -e "#DEL_ME TFTP => ${CHECK_FAIL} \nTFTP_CHECK=FAILED \nTFTP_PORT=${TFTP_PORT} \nTFTP_RESULT=\"server returned: ${TFTP_RESPONSE}\"" >> "${DATA_FILE_PATH}"
+                echo -e "#DEL_ME TFTP => ${CHECK_FAIL_HIST} \nTFTP_CHECK=FAILED \nTFTP_PORT=${TFTP_PORT} \nTFTP_RESULT=\"server returned: ${TFTP_RESPONSE}\"" >> "${DATA_FILE_PATH}"
               fi
 
             else
@@ -91,9 +91,9 @@ for host_group in config/host_groups/*; do
 	    URL="http://${HOST}:${HTTP_PORT}${HTTP_PATH}"
             HTTP_RESPONSE=$(${CMD_CURL} ${URL})
 	    if [[ $? -eq 0 ]]; then
-	      echo -e "#DEL_ME HTTP => ${CHECK_OK} \nHTTP_CHECK=PASSED \nHTTP_PORT=${HTTP_PORT}" >> "${DATA_FILE_PATH}"
+	      echo -e "#DEL_ME HTTP => ${CHECK_OK_HIST} \nHTTP_CHECK=PASSED \nHTTP_PORT=${HTTP_PORT}" >> "${DATA_FILE_PATH}"
             else
-              echo -e "#DEL_ME HTTP => ${CHECK_FAIL} \nHTTP_CHECK=FAILED \nHTTP_PORT=${HTTP_PORT} \nHTTP_RESULT=\"server returned: ${HTTP_RESPONSE}\"" >> "${DATA_FILE_PATH}"
+              echo -e "#DEL_ME HTTP => ${CHECK_FAIL_HIST} \nHTTP_CHECK=FAILED \nHTTP_PORT=${HTTP_PORT} \nHTTP_RESULT=\"server returned: ${HTTP_RESPONSE}\"" >> "${DATA_FILE_PATH}"
             fi
 
           fi
@@ -111,9 +111,9 @@ for host_group in config/host_groups/*; do
 	    URL="https://${HOST}:${HTTPS_PORT}${HTTPS_PATH}"
             HTTPS_RESPONSE=$(${CMD_CURL} ${URL})
 	    if [[ $? -eq 0 ]]; then
-              echo -e "#DEL_ME HTTPS => ${CHECK_OK} \nHTTPS_CHECK=PASSED \nHTTPS_PORT=${HTTPS_PORT}" >> "${DATA_FILE_PATH}"
+              echo -e "#DEL_ME HTTPS => ${CHECK_OK_HIST} \nHTTPS_CHECK=PASSED \nHTTPS_PORT=${HTTPS_PORT}" >> "${DATA_FILE_PATH}"
             else
-              echo -e "#DEL_ME HTTPS => ${CHECK_FAIL} \nHTTPS_CHECK=FAILED \nHTTPS_PORT=${HTTPS_PORT} \nHTTPS_RESULT=\"server returned: ${HTTPS_RESPONSE}\"" >> "${DATA_FILE_PATH}"
+              echo -e "#DEL_ME HTTPS => ${CHECK_FAIL_HIST} \nHTTPS_CHECK=FAILED \nHTTPS_PORT=${HTTPS_PORT} \nHTTPS_RESULT=\"server returned: ${HTTPS_RESPONSE}\"" >> "${DATA_FILE_PATH}"
             fi
 
           fi
