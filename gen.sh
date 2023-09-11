@@ -12,7 +12,7 @@
 
 # This page belongs to ..
 SERVICE_PROVIDER="contoso or some bulles-shites"
-SERVICE_PROVIDER+=" service status"
+SERVICE_PROVIDER+=" services status"
 
 # Target directory where status page and it's data should be stored
 # THESE THREE VARS MUST MATCH IN <update-data.sh> and <gen.sh> !!!
