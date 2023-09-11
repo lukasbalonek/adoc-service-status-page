@@ -12,6 +12,7 @@
 
 # This page belongs to ..
 SERVICE_PROVIDER="contoso or some bulles-shites"
+# and it is a:
 SERVICE_PROVIDER+=" services status"
 
 # Target directory where status page and it's data should be stored
@@ -21,14 +22,25 @@ DATA_DIR=${TARGET_DIR}/host_data
 # Results as .html pages
 RESULTS_DIR=${TARGET_DIR}/results_data
 
+# maximum history (number of bars represented)
+declare -i HIST_MAX=40
+
 # usable variables :-D
 TIMESTAMP=$(date +%F_%H-%M-%S)
 TIMESTAMP_MONKEY_READABLE=$(date +"%H:%M:%S %D")
 
 # MEDIA
 MEDIA_BAR_DEFAULT_OPTS="width=12"
+MEDIA_BACK_BTN_DEFAULT_OPTS="width=32,height=32"
+MEDIA_CHECK_DEFAULT_OPTS="width=24,height=24"
 BAR_OK="image:media/bar_ok.png"
 BAR_FAIL="image:media/bar_fail.png"
+BACK_BTN="image:../media/back.png"
+CHECK_OK="image:../media/status_ok.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
+CHECK_FAIL="image:../media/status_fail.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
+
+# Default commands
+CMD_CURL="curl --connect-timeout 10 -o /dev/null -I --silent -w "%{http_code}""
 
 # functions
 adoc-generate(){
@@ -70,7 +82,7 @@ for host_group in $(ls -t config/host_groups/); do
   if [[ -d ${host_group_path} ]]; then
 
     # tactical(formatting) newline
-    echo
+	echo
 
     # define and show host_group_name (category of host)
     host_group_name=$(cat ${host_group_path}/NAME)

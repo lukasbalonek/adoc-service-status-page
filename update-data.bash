@@ -8,43 +8,6 @@
 #											  #
 ###########################################################################################
 
-
-### CONFIGURATION ###
-
-# maximum history (number of bars represented)
-declare -i HIST_MAX=40
-
-# usable variables :-D
-TIMESTAMP=$(date +%F_%H-%M-%S)
-TIMESTAMP_MONKEY_READABLE=$(date +"%H:%M:%S %D")
-
-# MEDIA
-MEDIA_BACK_BTN_DEFAULT_OPTS="width=32,height=32"
-BACK_BTN="image:../media/back.png"
-MEDIA_CHECK_DEFAULT_OPTS="width=24,height=24"
-CHECK_OK="image:../media/status_ok.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
-CHECK_FAIL="image:../media/status_fail.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
-
-# functions
-adoc-generate(){
-cp -f config/docinfo.html .
-asciidoctor \
---backend html \
---base-dir . \
--a docinfo=shared \
--a doctype=book \
--a favicon=media/favicon.png \
--a last-update-label! \
--a nofooter \
-"$1"
-rm -f docinfo.html
-}
-
-# Default commands
-CMD_CURL="curl --connect-timeout 10 -o /dev/null -I --silent -w "%{http_code}""
-
-########## START ##########
-
 echo -e "\e[33mRefreshing data ..\e[m"
 
 mkdir -p ${DATA_DIR} ${RESULTS_DIR}
