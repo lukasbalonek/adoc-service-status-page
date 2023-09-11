@@ -15,7 +15,7 @@ SERVICE_PROVIDER="contoso or some bulles-shites"
 SERVICE_PROVIDER+=" services status"
 
 # Target directory where status page and it's data should be stored
-# THESE THREE VARS MUST MATCH IN <update-data.sh> and <gen.sh> !!!
+# THESE THREE VARS MUST MATCH IN <update-data.bash> and <gen.bash> !!!
 TARGET_DIR=public
 DATA_DIR=${TARGET_DIR}/host_data
 RESULTS_DIR=${TARGET_DIR}/results_data
@@ -47,7 +47,7 @@ rm -f docinfo.html
 ########## START ##########
 
 # update host data
-source update-data.sh
+source update-data.bash
 
 # Prepare target dir
 mkdir -p ${TARGET_DIR}
