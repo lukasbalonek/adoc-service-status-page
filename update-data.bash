@@ -120,8 +120,12 @@ for host_group in ${CONFIG_DIR}/host_groups/*; do
 
           # Create page where results are dumped
 	  src_file=dump.adoc
-	  echo "# ${HOST}" > ${src_file}
-	  echo -e "Time: ${TIMESTAMP_MONKEY_READABLE} \n" >> ${src_file}
+          if [[ -n ${HOST_PRETTY_NAME} ]]; then
+            echo "== ${HOST_PRETTY_NAME} (${HOST})" > ${src_file}
+          else
+            echo "== ${HOST}" > ${src_file}
+          fi
+	  echo -e "Check time: ${TIMESTAMP_MONKEY_READABLE} \n" >> ${src_file}
 	  echo -e "${BACK_BTN}[${MEDIA_BACK_BTN_DEFAULT_OPTS},link=../index.html,title=Back] \n" >> ${src_file}
           cat ${DATA_DIR}/${DATA_FILE} | tr ' ' '\n' >> ${src_file}
           adoc-generate ${src_file}
