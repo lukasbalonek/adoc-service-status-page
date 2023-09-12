@@ -21,6 +21,8 @@ TARGET_DIR=public
 DATA_DIR=${TARGET_DIR}/host_data
 # Results as .html pages
 RESULTS_DIR=${TARGET_DIR}/results_data
+# Where configuration is stored
+CONFIG_DIR=config
 
 # maximum history (number of bars represented)
 declare -i HIST_MAX=96
@@ -30,29 +32,36 @@ TIMESTAMP=$(date +%F_%H-%M-%S)
 TIMESTAMP_MONKEY_READABLE=$(date +"%H:%M:%S %D")
 
 # MEDIA
+MEDIA_BACK_BTN_DEFAULT_OPTS="width=96,height=48"
+BACK_BTN="image:../media/back.png"
+
 MEDIA_BAR_DEFAULT_OPTS="width=12"
-MEDIA_BACK_BTN_DEFAULT_OPTS="width=32,height=32"
-MEDIA_CHECK_DEFAULT_OPTS="width=24,height=24"
 BAR_OK="image:media/bar_ok.png"
 BAR_FAIL="image:media/bar_fail.png"
-BACK_BTN="image:../media/back.png"
-CHECK_OK="image:media/status_ok.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
-CHECK_FAIL="image:media/status_fail.png[${MEDIA_CHECK_DEFAULT_OPTS}]"
+
+MEDIA_CHECK_DEFAULT_OPTS="width=24,height=24"
+CHECK_OK_PATH="media/status_ok.png"
+CHECK_FAIL_PATH="media/status_fail.png"
+CHECK_OK="image:${CHECK_OK_PATH}[${MEDIA_CHECK_DEFAULT_OPTS}]"
+CHECK_FAIL="image:${CHECK_FAIL_PATH}[${MEDIA_CHECK_DEFAULT_OPTS}]"
 CHECK_OK_HIST=$(echo ${CHECK_OK} | sed "s@image:@image:../@g")
 CHECK_FAIL_HIST=$(echo ${CHECK_FAIL} | sed "s@image:@image:../@g")
+
+FAVICON_PATH="media/favicon.png"
+
 
 # Default commands
 CMD_CURL="curl --connect-timeout 10 -o /dev/null -I --silent -w "%{http_code}""
 
 # functions
 adoc-generate(){
-cp -f config/docinfo.html .
+cp -f ${CONFIG_DIR}/docinfo.html .
 asciidoctor \
 --backend html \
 --base-dir . \
 -a docinfo=shared \
 -a doctype=book \
--a favicon=media/favicon.png \
+-a favicon=${FAVICON_PATH} \
 -a last-update-label! \
 -a nofooter \
 "$1"
@@ -75,10 +84,10 @@ echo "Last updated: ${TIMESTAMP_MONKEY_READABLE}"
 echo
 
 # loop throught host_groups
-for host_group in $(ls -t config/host_groups/); do
+for host_group in $(ls -t ${CONFIG_DIR}/host_groups/); do
 
   # define path to host_group
-  host_group_path=config/host_groups/${host_group}
+  host_group_path=${CONFIG_DIR}/host_groups/${host_group}
 
   # do only for directories
   if [[ -d ${host_group_path} ]]; then
@@ -162,8 +171,11 @@ done
 
 } 1> index.adoc
 
+# Unset variable, that defines if any check failed
+unset SOME_CHECK_FAILED
+
 # check last hosts' status
-for HOST_FILE in config/host_groups/*/hosts/*; do
+for HOST_FILE in ${CONFIG_DIR}/host_groups/*/hosts/*; do
 
   # Load HOST's configuration
   source $HOST_FILE
@@ -180,6 +192,9 @@ for HOST_FILE in config/host_groups/*/hosts/*; do
       sed -i "s\== ${HOST}\== ${CHECK_FAIL} ${HOST_PRETTY_NAME}\g" index.adoc
     fi
 
+    # to change favicon based on any failed job
+    SOME_CHECK_FAILED=1
+
   else
 
     # Replace <hostname> with <check image + hostname>
@@ -194,6 +209,13 @@ for HOST_FILE in config/host_groups/*/hosts/*; do
 
 done
 
+# if some check failed, set favicon to CHECK_FAIL, otherwise CHECK_OK ofc
+if [[ ${SOME_CHECK_FAILED} -eq 1 ]]; then
+  cp -fv ${CONFIG_DIR}/${CHECK_FAIL_PATH} ${CONFIG_DIR}/${FAVICON_PATH}
+else
+  cp -fv ${CONFIG_DIR}/${CHECK_OK_PATH} ${CONFIG_DIR}/${FAVICON_PATH}
+fi
+
 # PART, WHERE .ADOC BECOMES AN .HTML
 adoc-generate index.adoc
 
@@ -205,8 +227,8 @@ if [ $0 ]; then
   echo -e "\e[33mMoving generated <index.html> into ${TARGET_DIR} ..\e[m"
   mv -fv index.html ${TARGET_DIR}/
 
-  echo -e "\e[33mCopying config/media directory into ${TARGET_DIR} ..\e[m"
-  cp -rfv config/media ${TARGET_DIR}/
+  echo -e "\e[33mCopying ${CONFIG_DIR}/media directory into ${TARGET_DIR} ..\e[m"
+  cp -rfv ${CONFIG_DIR}/media ${TARGET_DIR}/
 
   echo -e "\e[32m✓\e[m Successfully generated status page in folder ${TARGET_DIR}"
   exit 0

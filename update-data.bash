@@ -13,7 +13,7 @@ echo -e "\e[33mRefreshing data ..\e[m"
 mkdir -p ${DATA_DIR} ${RESULTS_DIR}
 
 # loop throught host_groups
-for host_group in config/host_groups/*; do
+for host_group in ${CONFIG_DIR}/host_groups/*; do
 
   # do only for directories
   if [[ -d ${host_group} ]]; then
