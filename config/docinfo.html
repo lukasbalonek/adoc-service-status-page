@@ -4,8 +4,8 @@
 :root {
     --white:#FFFFFF;
     --black:#000000;
-	--background-color:rgb(35,35,35);
-	blue-back: rgb(0,122,194);
+    --background-color:rgb(45,45,45);
+      blue-back: rgb(0,122,194);
 }
 
 #content,#header {
@@ -17,6 +17,7 @@
 
 body {
 background-color: var(--background-color);
+text-align: left;
 }
 
 td, th {
@@ -78,8 +79,18 @@ h5 {
     right:0
 }
 
+.header-background {
+    color: rgba(var(--background-color),0);
+    border-top: 115px solid rgb(35,35,35);
+    padding-top: 0px;
+    z-index: 1;
+    position: absolute;
+    top:0px;
+    left:0;
+    right:0
+}
+
 </style>
 
-<div class="thin-top-line">
-<!-- that trucking line at the top*/ -->
-</div>
+<div class="thin-top-line"></div>
+<div class="header-background"></div>
