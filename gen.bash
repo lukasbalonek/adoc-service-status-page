@@ -184,12 +184,12 @@ for HOST_FILE in ${CONFIG_DIR}/host_groups/*/hosts/*; do
   LATEST_DATA=$(ls -t public/host_data/$(basename ${HOST})* | head -n1)
   if grep -q "CHECK=FAILED" ${LATEST_DATA}; then
 
-    # Replace <hostname> with <check image + hostname>
-    sed -i "s\== ${HOST}\== ${CHECK_FAIL} ${HOST}\g" index.adoc
-
     # if host has pretty name
     if [[ -n ${HOST_PRETTY_NAME} ]]; then
-      sed -i "s\== ${HOST}\== ${CHECK_FAIL} ${HOST_PRETTY_NAME}\g" index.adoc
+      sed -i "s\== ${HOST}.*\== ${CHECK_FAIL} ${HOST_PRETTY_NAME}\g" index.adoc
+    else
+      # Replace <hostname> with <check image + hostname>
+      sed -i "s\== ${HOST}.*\== ${CHECK_FAIL} ${HOST}\g" index.adoc
     fi
 
     # to change favicon based on any failed job
@@ -197,12 +197,12 @@ for HOST_FILE in ${CONFIG_DIR}/host_groups/*/hosts/*; do
 
   else
 
-    # Replace <hostname> with <check image + hostname>
-    sed -i "s\== ${HOST}\== ${CHECK_OK} ${HOST}\g" index.adoc
-
     # if host has pretty name
     if [[ -n ${HOST_PRETTY_NAME} ]]; then
-      sed -i "s\== ${HOST}\== ${CHECK_OK} ${HOST_PRETTY_NAME}\g" index.adoc
+      sed -i "s\== ${HOST}.*\== ${CHECK_OK} ${HOST_PRETTY_NAME}\g" index.adoc
+    else
+      # Replace <hostname> with <check image + hostname>
+      sed -i "s\== ${HOST}\== ${CHECK_OK} ${HOST}\g" index.adoc
     fi
 
   fi
