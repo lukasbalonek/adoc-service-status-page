@@ -7,14 +7,13 @@
 - New services are configurable pretty simple:
   - Duplicate some check in **update-data.sh** (They start after "### CHECKS ###")
   - Modify it to fit your needs and don't forget that results must be saved in **SHELL variables**.
-  - Don't forget to unset these vars and the EOF
-  - In **gen.sh**, copy line commented "Make an error if any check fail" and modify variable to your. For example **TFTP_CHECK** variable
-  - Unset this **TFTP_CHECK** variable below
+  - In **gen.bash**, copy line commented "Make an error if any check fail" and modify variable to your. For example **TFTP_CHECK** variable
+  - Unset this variable **(TFTP_CHECK)** below
 
 # What it does
 
 - Get's configuration from **config/host_groups/**
-- Test host(s) **PING**, **HTTP**, and **HTTPS** and create page with report.
+- Test host(s) **PING**, **HTTP**, **HTTPS** ... and create page with report.
 - Create main **index.html** that shows those *pretty not pretty* clickable bars with links to reports generated.
 
 # How to configure
@@ -44,10 +43,10 @@
 apt install -yq grep tr sed asciidoctor curl iputils-ping bash
 ```
 
-- Then just run **gen.sh** in project directory:
+- Then just run **gen.bash** in project directory:
 
 ```bash
-./gen.sh
+./gen.bash
 ```
 
 - Push your files to your web server. For example:
